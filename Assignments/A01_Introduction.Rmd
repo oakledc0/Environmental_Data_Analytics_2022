@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Cal Oakley"
 output: pdf_document
 geometry: margin=2.54cm
 ---
@@ -22,21 +22,26 @@ The completed exercise is due on <>.
 
 1. What are your previous experiences with data analytics, R, and Git? Include both formal and informal training.
 
-> Answer: 
+> Answer: I have experience with Git from John Fay's Geospatial Data Analytics
+class but that was within a Python context. My R experience comes from John
+Poulson's Stats class and if I'm being honest I don't remember much.
 
 2. Are there any components of the course about which you feel confident?
 
-> Answer: 
+> Answer: I'm confident that I know the basics of Git, so versioning won't
+be a problem.
 
 3. Are there any components of the course about which you feel apprehensive?
 
-> Answer: 
+> Answer: I'm very apprehensive about working in R. Even after John Poulson's 
+class I don't feel like I know what I'm doing. I think that because I was
+learning statistics and coding simultaneously I didn't retain much of either.
 
 
 ## 2) GitHub
 
 Provide a link below to your forked course repository in GitHub. Make sure you have pulled all recent changes from the course repository  and that you have updated your course README file. 
 
-> Answer: 
+> Answer: https://github.com/oakledc0/Environmental_Data_Analytics_2022.git
 
 
