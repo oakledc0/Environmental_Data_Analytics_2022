@@ -1,6 +1,6 @@
 ---
 title: "Assignment 2: Coding Basics"
-author: "Student Name"
+author: "Cal Oakley"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -31,12 +31,18 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 4. Insert comments in your code to describe what you are doing.
 
 ```{r}
-#1. 
+#1.
+seq100by4 <- seq(0,100,4) #4. creating sequencing beginning at 0, ending at 100,
+#4. with a step of 4 (every 4th value between 0 & 100 is included)
 
 #2. 
-
+seq_mean <- mean(seq100by4) #4. calculating mean and assigning it a name for
+#4. later
+seq_median <- median(seq100by4) #4. calculating median and assigning it a name
+#4. for later
 #3. 
-
+seq_mean > seq_median #4. testing whether the mean of my sequence is greater 
+#4. than the median, answer should be FALSE since they are both '50'
 ```
 
 ## Basics Day 2
@@ -50,21 +56,44 @@ This exercise accompanies the lessons in Environmental Data Analytics on coding 
 8. Label the columns of your data frame with informative titles.
 
 ```{r}
+#5.
+a <- c("Emma","Rae","Cal","Sam","Aidan","Liam") #6. chr
+b <- runif(6, 0, 100) #6. num
+c <- b > 50 #6. logi
+
+#7.+ #8.  
+score_df <- data.frame("Name" = a, "Score" = b, "Pass?" = c)
 
 ```
 
 9. QUESTION: How is this data frame different from a matrix?
 
-> Answer: 
+> Answer: Data frames differ from matrices in that they can contain multiple data types (like characters, numbers, and boolean values in this case) while matrices can only contain a single data type. Matrices also have a fixed number of rows and columns while data frames do not.
 
 10. Create a function with an if/else statement. Your function should determine whether a test score is a passing grade of 50 or above (TRUE or FALSE). You will need to choose either the `if` and `else` statements or the `ifelse` statement. Hint: Use `print`, not `return`. The name of your function should be informative.
 
 11. Apply your function to the vector with test scores that you created in number 5. 
 
 ```{r}
-
+#10.
+# grade_tests <- function(x){
+#   if(x > 50) {
+#     print("Pass")
+#   }
+#   else {
+#     print("Fail")
+#   }
+# }
+#^first attempt at #10. but it only ran the function on the first value in the 
+#Score field
+grade_tests <- function(x){
+  ifelse(x > 50, print("Pass"), print("Fail"))
+}
+#^when applied, this one ran the 'test' on all six entries in the Score field
+#11.
+grade_tests(score_df$Score)
 ```
 
 12. QUESTION: Which option of `if` and `else` vs. `ifelse` worked? Why?
 
-> Answer: 
+> Answer: 'ifelse' worked the way I wanted while 'if' followed by 'else' didn't. More details can be found in my comments above. One other odd thing happened too though. 'ifelse' also printed each of the different outputs that the function produced as individual outputs prior to printing the outputs of the entire Score field. I couldn't find a way to prevent this.  
