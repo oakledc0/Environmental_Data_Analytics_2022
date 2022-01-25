@@ -37,81 +37,110 @@ vector2
 vector3 <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE) #logical vector
 vector3
 
-vector1[3] # 
+vector1[3] #selects the 3rd entry in vector1, NOTENOTENOTE: R starts at 1, Python
+#starts at 0. Don't get confused!
 
 # Matrices ----
-matrix1 <- matrix(1:20, nrow = 5,ncol = 4) # 
-matrix1
-matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #
+matrix1 <- matrix(1:20, nrow = 5,ncol = 4) #creates matrix with values b/w 1-20
+matrix1 #NOTICE values are listed top-to-bottom, then across, based con nrow &
+#ncol
+matrix2 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE) #this produces a matrix
+#with the same values as above, but lists values left-to-right, then down
 matrix2
 matrix3 <- matrix(1:20, nrow = 5, ncol = 4, byrow = TRUE, # return after comma continues the line
                   dimnames = list(c("uno", "dos", "tres", "cuatro", "cinco"), 
-                                  c("un", "deux", "trois", "cat"))) #
+                                  c("un", "deux", "trois", "cat"))) #same as
+#as previous (matrix2), but with specific row and column names. NOTICE, in dim-
+#names = row names list first, then column names 
 
-matrix1[4, ] #
-matrix1[ , 3] #
-matrix1[c(12, 14)] #
-matrix1[c(12:14)] #
-matrix1[2:4, 1:3] #
+matrix1[4, ] #returns the 4th (penultimate) row of matrix1
+matrix1[ , 3] #returns the 3rd column of matrix1
+matrix1[c(12, 14)] #returns the values in the 12th & 14th position in the matrix
+#reads the matrix the way the default write a matrix (top-to-bottom, then across)
+matrix1[c(12:14)] #returns values in the 12th THROUGH 14th position
+matrix1[2:4, 1:3] #returns a 2D subset of matrix. In this case columns 1-3 for 
+#rows 2-4
 
 cells <- c(1, 26, 24, 68)
 rnames <- c("R1", "R2")
 cnames <- c("C1", "C2") 
 matrix4 <- matrix(cells, nrow = 2, ncol = 2, byrow = TRUE,
-  dimnames = list(rnames, cnames)) # 
+  dimnames = list(rnames, cnames)) #combines the previous 3 lines to create a
+#highly customized matrix. NOTICE specific values, writing direction ("byrow = 
+#TRUE"), number of rows and columns, & names of rows and columns
 matrix4
 
 # Lists ---- 
 list1 <- list(name = "Maria", mynumbers = vector1, mymatrix = matrix1, age = 5.3); list1
-list1[[2]]
+list1[[2]] #this shit is cool b/c it shows that lists can contain objects within
+#them with different datatypes ITS THE SAME AS a Python dictionary (keys & values)
 
 # Data Frames ----
-d <- c(1, 2, 3, 4) # What type of vector?
-e <- c("red", "white", "red", NA) # What type of vector?
-f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector?
+d <- c(1, 2, 3, 4) # What type of vector? num
+e <- c("red", "white", "red", NA) # What type of vector? chr
+f <- c(TRUE, TRUE, TRUE, FALSE) # What type of vector? logi
 dataframe1 <- data.frame(d,e,f) #
-names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) # 
+names(dataframe1) <- c("ID","Color","Passed"); View(dataframe1) #this does a 
+# couple things:
+#   renames fields in dataframe using c()
+#   connects two actions in one line using ';'
 
-dataframe1[1:2,] # 
-dataframe1[c("ID","Passed")] # 
-dataframe1$ID
+dataframe1[1:2,] #displays rows 1-2 for all fields
+dataframe1[c("ID","Passed")] #displays all values for fields 'ID' & 'Passed' 
+#^appears as smaller df
+dataframe1$ID #displays one field of df as vector, couple probably '<-' it to 
+#its own object
 
 ```
 Question: How do the different types of data appear in the Environment tab?
 
-> Answer: 
+> Answer: vectors appear as 'Values' while dataframes, matrices, & lists appear as 'Data'. What is the difference and why does it matter?
 
 Question: In the R chunk below, write "dataframe1$". Press `tab` after you type the dollar sign. What happens?
 
-> Answer: 
-
-
-
+> Answer: When I do that and hit tab it selects the 1st field in the dataframe. At least that's what happens when I typed it all continuously. If I type 'dataframe1$' and then hit tab, but then remove 'ID' (the 1st field), and THEN hit tab again, it brings the list of all fields up again. Useful for selecting fields.
 
 ### Coding challenge
 
 Find a ten-day forecast of temperatures (Fahrenheit) for Durham, North Carolina. Create two vectors, one representing the high temperature on each of the ten days and one representing the low.
 
 ```{r}
-
+high_tempDurham <- c(58, 41, 43, 45, 35, 42, 49, 52, 56, 66) #you can add 'L' to
+# the back of each number values to specify a long integer, you can also specify
+# a short integer with 'S' (maybe test)
+low_tempDurham <- c(31, 20, 25, 28, 19, 23, 25, 29, 43, 49)
 ```
 
 Now, create two additional vectors that include the ten-day forecast for the high and low temperatures in Celsius. Use a function to create the two new vectors from your existing ones in Fahrenheit.
 
 ```{r}
-
+F_to_C_temps <- function(x){
+  (x-32)*(5/9)
+}
+# F_to_C_temps <- function(x){
+#   round((x-32)*(5/9), 2)
+# }
+#^this function incorporates a final rounding into the conversion, useful for 
+#cleaning df's
+high_tempC <- F_to_C_temps(high_tempDurham)
+low_tempC <- F_to_C_temps(low_tempDurham)
 ```
 
 Combine your four vectors into a data frame and add informative column names.
 
 ```{r}
-
+Durham10DayTemps <- data.frame("High F" = high_tempDurham, "Low F" = low_tempDurham, "High C" = high_tempC, "Low C" =low_tempC) #set field names using the format above, set
+#row names using "row.name =" 
+##Durham10DayTemps
 ```
 
 Use the common functions `summary` and `sd` to obtain basic data summaries of the ten-day forecast. How would you call these functions differently for the entire data frame vs. a single column? Attempt to demonstrate both options below.
 
 ```{r}
-
+summary(Durham10DayTemps)
+sd(Durham10DayTemps$Low.F) #sd seems to only work for one field at a time
+#could be brute-forced, but maybe avoid that
+summary(Durham10DayTemps$Low.F)
 ```
 
 ### Date objects
@@ -131,7 +160,8 @@ Remember formatting of dates in R:
 # Adjust date formatting for today
 # Write code for three different date formats. 
 # An example is provided to get you started.
-# (code must be uncommented)
+# (code must be uncommented) -----> what does this mean? How to I version control
+#in GitHub?
 today <- Sys.Date()
 format(today, format = "%B")
 #format(today, format = "")
@@ -159,7 +189,7 @@ date_obj_today
 
 #Ex2
 str_today <- "21-feb-3"
-#Sine the format is year-month-day we will use function ymd()
+#Since the format is year-month-day we will use function ymd()
 date_obj_today <- ymd(str_today)
 date_obj_today
 
@@ -176,15 +206,16 @@ date_obj_past
 fix.early.dates <- function(d, cutoff) {
        m <- year(d) %% 100  #operator %% is a modular division i.e. integer-divide year(d) by 100 and returns the remainder 
        year(d) <- ifelse(m > cutoff, 1900+m, 2000+m)  #this will update year(d), year() is a function that returns the year for a data object
-       return(d)
-}
+       return(d) #this line may be unnecessary
+}#NOTICE this function reguires 2 inputs: d -> the date & cutoff -> in this case 21 for 2021 (maybe)
+#should be 22 now...
 
 fixed_date_obj_past <- fix.early.dates(date_obj_past,cutoff=21) #cutoff could be the current year to be more general or any other depending on data set 
 fixed_date_obj_past
 ```
 
 ```{r centuryfix}
-#Fix for century issue
+#Fix for century issue #SOOOOOO much easier than the example in previous chunk
 str_past <- "55-feb-3"
 #Alternative 1
 date_obj_past <- fast_strptime(str_past,"%y-%b-%d",cutoff_2000=21L)
@@ -202,5 +233,7 @@ In some cases when dates are provided as integers, you may need to provide an or
 ```{r dateorigin}
 #Check if "1970-01-01" is your origin date.
 lubridate::origin
-
+#I thiink that is you are converting Integer dates to current dates you may need
+#to write a function, but I should check lubridate docs to see if it has a better
+#fix
 ```
