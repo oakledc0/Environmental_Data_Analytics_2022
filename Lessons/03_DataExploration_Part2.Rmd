@@ -43,6 +43,7 @@ class(USGS.flow.data$datetime)
 
 USGS.flow.data$datetime <- as.Date(USGS.flow.data$datetime, format = "%Y-%m-%d") 
 class(USGS.flow.data$datetime)
+##CSV DATES ARE ALWAYS chr BY DEFAULT, MUST BE CHANGES TO Date OBJECT^
 
 ```
 
@@ -67,24 +68,26 @@ ggplot(USGS.flow.data, aes(x = discharge.mean.approval)) +
 Visualize distributions of values for continuous numerical variables. What is happening in each line of code? Insert a comment above each line.
 
 ```{r, fig.height = 3, fig.width = 4}
-#
+#plots histogram of discharge.mean with default visualization parameters
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean))
 
-#
+#plots histogram of discharge.mean with bindwidth of 10 (10 samples/bin)
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), binwidth = 10)
 
-#
+#plots histogram of discharge.mean with 20 bins (NOTICE this looks like the 
+#first example, but they are different)
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = discharge.mean), bins = 20)
 
-#
+#plots histogram of discharge.mean with binwidth of 10, & sample below 500 mean
+# discharge volume
 ggplot(USGS.flow.data, aes(x = discharge.mean)) +
   geom_histogram(binwidth = 10) + 
   scale_x_continuous(limits = c(0, 500))
   
-#
+#plots histogram of gage.height.mean with default visualization parameters
 ggplot(USGS.flow.data) +
   geom_histogram(aes(x = gage.height.mean))
 
@@ -94,14 +97,16 @@ ggplot(USGS.flow.data) +
 An alternate to a histogram is a frequency polygon graph (distributions of values for continuous numerical variables). Instead of displaying bars,  counts of continuous variables are displayed as lines. This is advantageous if you want to display multiple variables or categories of variables at once.
 
 ```{r, fig.height = 3, fig.width = 4}
-#
+#plots frequency lines (# of samples) for gage.height.mean, .max, & .mean each
+#not ways for distinguishing variables (color, lty -> 'line type')
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean), bins = 50) +
-  geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "darkgray") +
+  geom_freqpoly(aes(x = gage.height.min), bins = 50, color = "red") +
   geom_freqpoly(aes(x = gage.height.max), bins = 50,  lty = 2) +
   scale_x_continuous(limits = c(0, 10))
 
-#
+#plots frequency lines for gage.height.mean, but seperates and symbolizes fre-
+#quencies by another variable, in this case gage.height.mean.approval
 ggplot(USGS.flow.data) +
   geom_freqpoly(aes(x = gage.height.mean, color = gage.height.mean.approval), bins = 50) +
   scale_x_continuous(limits = c(0, 10)) +
@@ -123,15 +128,16 @@ A box-and-whisker plot is yet another alternative to histograms (distributions o
 An alternate option is a violin plot, which displays density distributions, somewhat like a hybrid of the box-and-whiskers and the frequency polygon plot.
 
 ```{r, fig.height = 3, fig.width = 4}
-#
+#creates boxplots of gage.height.mean for unique values in gage.height.mean.approval
 ggplot(USGS.flow.data) +
   geom_boxplot(aes(x = gage.height.mean.approval, y = gage.height.mean))
 
-#
+#creates boxplots of discharge.mean by gage.height.mean within each gage.height.
+#mean ("cut_width= 1")
 ggplot(USGS.flow.data) +
   geom_boxplot(aes(x = gage.height.mean, y = discharge.mean, group = cut_width(gage.height.mean, 1)))
 
-#
+#creates violin plot of same variables as first example
 ggplot(USGS.flow.data) +
   geom_violin(aes(x = gage.height.mean.approval, y = gage.height.mean), 
               draw_quantiles = c(0.25, 0.5, 0.75))
@@ -142,7 +148,7 @@ Visualize relationships between continuous numerical variables.
 
 ```{r, fig.height = 3, fig.width = 4}
 ggplot(USGS.flow.data) +
-  geom_point(aes(x = discharge.mean, y = gage.height.mean))
+  geom_point(aes(x = discharge.max, y = gage.height.max))
 
 ggplot(USGS.flow.data) +
   geom_point(aes(x = datetime, y = discharge.mean))
@@ -150,21 +156,21 @@ ggplot(USGS.flow.data) +
 
 Question: under what circumstances would it be beneficial to use each of these graph types (bar plot, histogram, frequency polygon, box-and whisker, violin, scatterplot)?
 
-> Answer: 
+> Answer: It really depends on what you're interested in. Some tell you about the frequency and distribution of data (bar plot, histogram, frequency polygon, violin), others give a lite statistical summary (box-and-whisker), and others let you look for any trends between different variables(scatterplot). 
 
 ## Ending discussion
 
 What did you learn about the USGS discharge dataset today? What separate insights did the different graph types offer?
-> Answer: 
+> Answer: The thing I learned that stands out most to me is that the gage site this dataset came from experienced a gap in monitoring between the early 1970's and mid 1980's. The bar plot and histogram showed the frequency and distribution of values for a single variable. The frequency polygon did the same but allowed us to compare multiple variables at the same time. The box-and-whisker plot showed us, very generally, the tendencies within the data (by which I mean how the data may be skewed & where the median is). The violin plot did the same while also visualizing the frequency of datapoints sharing the same value. The scatterplot allowed us to observe relationships between variables and potentially identify correlation or significant relationships.
 
 
 How can multiple options for data exploration inform our understanding of our data?
 
-> Answer: 
+> Answer: Since each type of visualization tells us something slightly different, using many different types before beginning any analyses could reveal patterns we hadn't expected before. Thus offering additional avenues for investigation. 
 
 
 Do you see any patterns in the USGS data for the Eno River? What might be responsible for those patterns and/or relationships?
 
-> Answer: 
+> Answer: I saw the monitoring gap I mentioned earlier. Possible explanations for this include lost data, a gap in program support ($$$), or some other explanation (perhaps development was occuring on or around the river so much that monitoring was suspended so the otherwise 'normal' data set wouldn't be confounded with atypical flow patters; no idea why anyone would do that though). I also noticed (after playing around a bit) that gage.height.max does not really increase after a certain discharge.mean. In my mind this means that perhaps the gage was overwhelmed? I also plotted gage.height.max and discharge.max, but found no similair pattern, so I can't say anything with certainty. 
 
 
