@@ -19,7 +19,7 @@ Today we will work with a dataset from the [North Temperate Lakes Long-Term Ecol
 
 Opening discussion: why might we be interested in long-term observations of temperature, oxygen, and light in lakes?
 
-> Add notes here: 
+> Add notes here: to estimate lake productivity and the assortment of different processes that affects
 
 ```{r, message = FALSE}
 getwd()
@@ -55,7 +55,8 @@ What is the best way to wrangle data? There are multiple ways to arrive at a spe
 `dplyr` is a package in R that includes functions for data manipulation (i.e., data wrangling or data munging). `dplyr` is included in the tidyverse package, so you should already have it installed on your machine. The functions act as verbs for data wrangling processes. For more information, run this line of code:
 
 ```{r, results = "hide"}
-vignette("dplyr")
+vignette("dplyr") #displays need little summary of the package as well as 
+#examples
 ```
 
 ### Filter
@@ -63,14 +64,14 @@ vignette("dplyr")
 Filtering allows us to choose certain rows (observations) in our dataset.
 
 Here are the relevant commands used in the `filter` function. Add some notes to designate what these commands mean. 
-`==`
-`!=`
-`<`
-`<=`
-`>`
-`>=`
-`&`
-`|`
+`==` #is equal to
+`!=` #is not equal to
+`<` #less than
+`<=` #less than or equal to
+`>` #greater than
+`>=` #greater than or equal to
+`&` #and
+`|` #or
 
 ```{r}
 class(NTL.phys.data$lakeid)
@@ -83,7 +84,7 @@ NTL.phys.data.surface1 <- NTL.phys.data[NTL.phys.data$depth == 0,]
 NTL.phys.data.surface2 <- filter(NTL.phys.data, depth == 0)
 NTL.phys.data.surface3 <- filter(NTL.phys.data, depth < 0.25)
 
-# Did the methods arrive at the same result?
+# Did the methods arrive at the same result? YESYESYESYES
 head(NTL.phys.data.surface1)
 dim(NTL.phys.data.surface1)
 head(NTL.phys.data.surface2)
@@ -111,11 +112,11 @@ NTL.phys.data.JunethruOctober4 <- filter(NTL.phys.data, daynum %in% c(152:304))
 # filter NTL.phys.data for the year 1999
 # what code do you need to use, based on the class of the variable?
 class(NTL.phys.data$year4)
-
+NTL.phys.data.1999 <- filter(NTL.phys.data, year4 == 1999)
 # Exercise: 
 # filter NTL.phys.data for Tuesday Lake from 1990 through 1999.
-
-
+NTL.phy.data.TuesLake90to99 <- filter(NTL.phys.data, lakename == "Tuesday Lake",
+                                      year4 %in% c(1990:1999))
 ```
 Question: Why don't we filter using row numbers?
 
@@ -128,12 +129,14 @@ Arranging allows us to change the order of rows in our dataset. By default, the 
 ```{r}
 NTL.phys.data.depth.ascending <- arrange(NTL.phys.data, depth)
 NTL.phys.data.depth.descending <- arrange(NTL.phys.data, desc(depth))
+#^NOTICE, that desc() reads in the descening order
+#??????????????????? is this usuable outside of dplyr?
 
 # Exercise: 
 # Arrange NTL.phys.data by temperature, in descending order. 
 # Which dates, lakes, and depths have the highest temperatures?
-
-
+NTL.phys.data.temps.descending <- arrange(NTL.phys.data, desc(temperature_C))
+head(NTL.phys.data.temps.descending)
 ```
 ### Select
 
@@ -141,7 +144,8 @@ Selecting allows us to choose certain columns (variables) in our dataset.
 
 ```{r}
 NTL.phys.data.temps <- select(NTL.phys.data, lakename, sampledate:temperature_C)
-
+#creates subset dataframe that includes only lakename column and columns 
+#between (inclusive) sampledate and temperature_C
 ```
 ### Mutate
 
@@ -150,7 +154,7 @@ Mutating allows us to add new columns that are functions of existing columns. Op
 ```{r}
 
 NTL.phys.data.temps <- mutate(NTL.phys.data.temps, temperature_F = (temperature_C*9/5) + 32)
-
+# adds temperature in Fahrenheit
 ```
 
 ## Lubridate
@@ -167,6 +171,8 @@ NTL.phys.data.PeterPaul1 <- select(NTL.phys.data.PeterPaul1, lakeid:daynum, mont
 # find out the start and end dates of the dataset
 interval(NTL.phys.data.PeterPaul1$sampledate[1], NTL.phys.data.PeterPaul1$sampledate[21613])
 interval(first(NTL.phys.data.PeterPaul1$sampledate), last(NTL.phys.data.PeterPaul1$sampledate))
+#this last one seems better since you don't need to know how many entries are
+#actually in the dataframe
 ```
 
 
