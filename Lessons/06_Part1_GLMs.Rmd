@@ -83,7 +83,7 @@ cor.test(PeterPaul.chem.nutrients$irradianceWater, PeterPaul.chem.nutrients$dept
 ```
 Question: How would you report the results of this test (overall findings and report of statistical output)?
 
->  
+> I would write out the equation for the line reported by the linear regression and report the p-value and R^2. 
 
 So, we see there is a significant negative correlation between irradiance and depth (lower light levels at greater depths), and that this model explains about 31 % of the total variance in irradiance. Let's visualize this relationship and the model itself. 
 
@@ -139,10 +139,17 @@ irradiancebydepth2 <-
     ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
     geom_point() +
     scale_y_log10() +  #log transformed values for irradianceWater
-    geom_smooth(method = 'lm', se = FALSE, color = "black")
+    geom_smooth(method = 'lm', se = TRUE, color = "black")
 print(irradiancebydepth2)
 
 # Make the graph attractive
+irradiancebydepth2 <- 
+    ggplot(PeterPaul.chem.nutrients, aes(x = depth, y = irradianceWater)) +
+    geom_point(color = "red") +
+    scale_y_log10() +  #log transformed values for irradianceWater
+    geom_smooth(method = 'lm', se = TRUE, color = "black") +
+  labs( x = "Depth", y = "log(Irradiance)")
+print(irradiancebydepth2)
 
 ```
 
@@ -177,8 +184,8 @@ PeterPaulnutrients <-
   select(tn_ug:po4) %>%
   na.omit()
 PeterPaulCorr <- cor(PeterPaulnutrients)
-corrplot(PeterPaulCorr, method = "ellipse")
-corrplot.mixed(PeterPaulCorr, upper = "ellipse")
+# corrplot(PeterPaulCorr, method = "ellipse")
+corrplot.mixed(PeterPaulCorr, upper = "ellipse") #shows shapes and values
 ```
 
 ## AIC to select variables

@@ -16,7 +16,7 @@ editor_options:
 ```{r, message = FALSE}
 getwd()
 library(tidyverse)
-#install.packages("agricolae")
+# install.packages("agricolae")
 library(agricolae)   #you may need to install/update package "htmltools" before installing and loading agricolae
 
 Litter <- read.csv("./Data/Processed/NEON_NIWO_Litter_mass_trap_Processed.csv", stringsAsFactors = TRUE)
@@ -85,7 +85,9 @@ summary(Litter.Totals.anova2)
 
 # Checking model fit and assumptions
 # ANOVA is robust against departures from normality.
+par(mfrow = c(2,2), mar=c(4,4,4,4))
 plot(Litter.Totals.anova2)
+par(mfrow = c(1,1))
 
 # Post-hoc test
 # TukeyHSD() computes Tukey Honest Significant Differences
@@ -109,7 +111,7 @@ print(Litter.Totals.plot)
 
 What information does the output give us? How might we report this information in a report?
 
-> 
+> ?????
 
 ## TWO-WAY ANOVA
 ### Main effects
@@ -162,8 +164,34 @@ Litter.groups
 # Plot the results
 # Edit this graph to make it more visually appealing.
 # Add letters to represent statistical groupings.
-Litter.anova.plot <- ggplot(Litter, aes(y = dryMass, x = nlcdClass, color = functionalGroup)) +
-  geom_boxplot()
+Litter.anova.plot1 <- ggplot(subset(Litter, nlcdClass == "evergreenForest"),
+                             aes(y = dryMass, x = functionalGroup)) +
+  geom_boxplot() +
+  ylim(0, 30) +
+  theme(axis.text.x = element_text(angle = 55, hjust = 1)) +
+  labs(x = "Funtional Group", y = "Dry Mass (g)")
+Litter.anova.plot1
+
+Litter.anova.plot2 <- ggplot(subset(Litter, nlcdClass == "grasslandHerbaceous"),
+                             aes(y = dryMass, x = functionalGroup)) +
+  geom_boxplot() +
+  ylim(0, 25) +
+  theme(axis.text.x = element_text(angle = 55, hjust = 1)) +
+  labs(x = "Funtional Group", y = "Dry Mass (g)")
+Litter.anova.plot2
+
+Litter.anova.plot3 <- ggplot(subset(Litter, nlcdClass == "shrubScrub"),
+                             aes(y = dryMass, x = functionalGroup)) +
+  geom_boxplot() +
+  # ylim(0, 30) +
+  theme(axis.text.x = element_text(angle = 55, hjust = 1)) +
+  labs(x = "Funtional Group", y = "Dry Mass (g)")
+Litter.anova.plot3
+
+library(cowplot)
+Litter.anova.plot <- plot_grid(Litter.anova.plot1, Litter.anova.plot2 + 
+                                 labs(x = "", y = ""),
+                               Litter.anova.plot3, ncol = 3, align = 'h')
 print(Litter.anova.plot)
 
 ```
