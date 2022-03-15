@@ -81,10 +81,10 @@ mapView(counties_sf, zcol = "AWATER")
 ```{r read HUCs shapefile}
 #Read the shapefile into an sf dataframe named "huc8_sf"
 
-
+huc8_sf <- st_read('./Data/Spatial/NCHUC8.shp')
 
 #View the data as a map, colored by the acreage in each
-
+ggplot(huc8_sf) + geom_sf(color = "black",fill = "purple")
 
 ```
 
@@ -94,11 +94,13 @@ mapView(counties_sf, zcol = "AWATER")
 
 ```{r Select the Upper Neuse HUC 8}
 #Read the shapefile into an sf dataframe
-
-
+huc8_sf_filt <- st_read('./Data/Spatial/NCHUC8.shp') %>% 
+  filter(SUBBASIN == 'Upper Neuse')
 
 #Create a map
-
+ggplot() + 
+  geom_sf(data = huc8_sf, fill = "orange") +
+  geom_sf(data = huc8_sf_filt, fill = "purple")
 
 ```
 
@@ -114,18 +116,23 @@ The URL '<https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Ene
 
 ```{r}
 #Compute HUC8 wind energy
-
-
-
+ENVatlas_WindEng <-
+  read.csv('https://raw.githubusercontent.com/ENV859/EnviroAtlasData/main/Wind_Energy.csv',
+           colClasses = c(HUC_12 = 'factor')) %>% 
+  mutate(HUC_8 = substr(HUC_12, 1, 8)) %>% 
+  group_by(HUC_8) %>% 
+  summarise(SumEng_HUC8 = sum(AvgWindEnergy))
+  
 
 #Join to HUC_8 features
-
-
+library(dplyr)
+huc8_sf_wind <- left_join(huc8_sf, ENVatlas_WindEng,'HUC_8')
 
 
 #View the outputs
-
-
+ggplot() +
+  geom_sf(data = huc8_sf_wind, aes(fill = SumEng_HUC8)) +
+  labs(fill = "MW/year")
 
 ```
 
@@ -154,11 +161,11 @@ On top of projecting any geographic data to adjust for the limitations of the so
 
 ```{r Transform the datasets to other coordinate reference systems}
 #Convert all to UTM Zone 17 (crs = 26917)
-epa_sf_utm <-      st_transform(epa_pm25_sites_sf, crs = 26917)
-counties_sf_utm <- 
-state_sf_utm <-    
-huc8_sf_utm <-     
-huc2_utm <-        
+epa_sf_utm <- st_transform(epa_pm25_sites_sf, crs = 26917)
+counties_sf_utm <- st_transform(counties_sf, crs = 26917) 
+#state_sf_utm <- st_transform(state_sf), crs = 26917)   
+huc8_sf_utm <-  st_transform(huc8_sf, crs = 26917)   
+# huc2_utm <- st_transform(huc2_sf, crs = 26917)       
 ```
 
 ## 3.3 Clipping and intersecting data
@@ -168,16 +175,20 @@ Select the counties in the "Triangle" (Chatham, Durham, Orange, and Wake). Then 
 
 ```{r EXERCISE: Clipping}
 #Select the Triangle counties from the sf_counties dataframe
-
-
+triangle_co <- counties_sf_utm %>% 
+  filter(NAME %in% c('Durham','Chatham', 'Orange', 'Wake'))
 
   
 #Grab the intersecting HUC_8s
-
+traingle_HUC8s <- counties_sf_utm[triangle_co,]
 
 
 #Intersect the HUC_8s
+triangle_HUC8_co <- triangle_co %>% 
+  st_intersection(counties_sf_utm)
 
+mapview(triangle_HUC8_co, alpha.regions = 0)
+  
 
 
 
