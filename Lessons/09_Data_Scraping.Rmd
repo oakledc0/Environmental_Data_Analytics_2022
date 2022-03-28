@@ -112,6 +112,7 @@ the_facility_type <- webpage %>%
   html_nodes("tr:nth-child(2) .left~ .left+ td.left") %>% 
   html_text()
 the_facility_type
+
 ```
 
 Next, we'll extract multiple items from the web page into a list object. Using Selector Gadget, highlight in yellow or green all the Average Daily Withdrawal (MGD) values from the web page. Tip: Hold the <ctrl> key down while clicking elements to add/subtract regions from selected regions.
@@ -136,7 +137,7 @@ Now that we've scraped the data we want into our coding environment, the next st
 ```{r create.dataframe.from.scrapings}
 #Create a dataframe of withdrawals
 df_withdrawals <- data.frame("Month" = rep(1:12),
-                             "Year" = rep(2000,12),
+                             "Year" = rep(2020,12),
                              "Avg_Withdrawals_mgd" = as.numeric(avg_withdrawals),
                              "Max_Withdrawals_mgd" = as.numeric(max_withdrawals))
 
@@ -202,7 +203,7 @@ df_withdrawals <- data.frame("Month" = rep(1:12),
 ggplot(df_withdrawals,aes(x=Date,y=Avg_Withdrawals_mgd)) + 
   geom_line() + 
   geom_smooth(method="loess",se=FALSE) +
-  labs(title = paste("2020 Water usage data for",the_registrant),
+  labs(title = paste("2015 Water usage data for",the_registrant),
        subtitle = the_facility_name,
        y="Withdrawal (mgd)",
        x="Date")
