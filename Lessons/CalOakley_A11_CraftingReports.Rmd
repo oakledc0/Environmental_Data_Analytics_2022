@@ -4,7 +4,6 @@ author: Environmental Data Analytics | John Fay & Luana Lima | Developed by Kate
 date: "Spring 2022"
 output:
  pdf_document: default
-
 ---
 
 ## LESSON OBJECTIVES
@@ -64,11 +63,27 @@ See: <https://rmarkdown.rstudio.com> and class recording.
 ## WHY R MARKDOWN?
 
 <Fill in our discussion below with bullet points. Use italics and bold for emphasis (hint: use the cheat sheets or `Help` →`Markdown Quick Reference` to figure out how to make bold and italic text).> 
+-visible code with text makes it reproducible & transparent transparency
+-***easily*** shared with others as PDF *(and other formats)*
+
 
 
 ## TEXT EDITING CHALLENGE
 
 Create a table below that details the example datasets we have been using in class. The first column should contain the names of the datasets and the second column should include some relevant information about the datasets. (Hint: use the cheat sheets to figure out how to make a table in Rmd)
+
+| Dataset Name | Description |
+| - | - |
+| NC 0zone Concentrations 2019 | Ozone atmospheric concentrations for North Carolina in 2019, from EPA |
+| NC 0zone Concentrations 2018 | Ozone atmospheric concentrations for North Carolina in 2018, from EPA |
+| NC PM2.5 Concentrations 2019 | PM2.5 atmospheric concentrations for North Carolina in 2019, from EPA |
+| NC PM2.5 Concentrations 2018 | PM2.5 atmospheric concentrations for North Carolina in 2018, from EPA |
+| NEON NIWO Litter Data | Data on litter mass and type for points at the NEON Niwot Ridge site in Colorado (summers between 2016 & 2019) |
+| NTL-LTER Lake Carbon | Carbon measurements from lakes in the North Temperate Lakes Long Term Ecological Research Network |
+| NTL-LTER Lake Chemistry & Physics | Chemistry & Physics measurements from lakes in the North Temperate Lakes Long Term Ecological Research Network | 
+| NTL-LTER Lake Nutrients | Nutrient measurements from lakes in the North Temperate Lakes Long Term Ecological Research Network |
+| NWIS Site Flow Data | Flow measurements from several sites from the National Water Information System for March 2019 |
+| Grainger NC Ozone Concentrations | Ozone atmospheric concentrations for Grainger, NC between 2010 & 2019, from EPA |
 
 
 ## R CHUNK EDITING CHALLENGE
@@ -77,6 +92,11 @@ Create a table below that details the example datasets we have been using in cla
 
 Create an R chunk below that installs the package `knitr`. Instead of commenting out the code, customize the chunk options such that the code is not evaluated (i.e., not run).
 
+```{r chunk editing challenge, eval=FALSE}
+
+install.packages(knitr)
+
+```
 
 ### Setup
 
@@ -85,6 +105,27 @@ Create an R chunk below called "setup" that checks your working directory, loads
 Load the NTL-LTER_Lake_Nutrients_Raw dataset, display the head of the dataset, and set the date column to a date format.
 
 Customize the chunk options such that the code is run but is not displayed in the final document.
+
+```{r setup, warning=FALSE, message=FALSE, echo=FALSE}
+setwd(
+    "K:/GradSchool/Spring2022/EnvironmentalDataAnalytics/Environmental_Data_Analytics_2022")
+getwd()
+
+library(tidyverse)
+library(lubridate)
+library(knitr)
+
+CalsTheme <- theme_classic(base_size = 16) +
+  theme(axis.text = element_text(color = "gray"), legend.position = "left",
+        legend.justification = 2)
+theme_set(CalsTheme)
+
+NTL_LTER_LakeNutrientsRaw <- read.csv('./Data/Raw/NTL-LTER_Lake_Nutrients_Raw.csv')
+
+NTL_LTER_LakeNutrientsRaw$sampledate <- mdy(NTL_LTER_LakeNutrientsRaw$sampledate)
+
+print(head(NTL_LTER_LakeNutrientsRaw))
+```
 
 
 ### Data Exploration, Wrangling, and Visualization
@@ -95,16 +136,81 @@ Create an R chunk below to create a processed dataset do the following operation
 -   Include only surface samples (depth = 0 m)
 -   Drop rows with missing data
 
+```{r DEWV1}
+NTL_LTER_Nut_processed <- NTL_LTER_LakeNutrientsRaw %>% 
+    select(lakename:sampledate,depth:po4) %>% 
+    filter(depth == 0) %>% 
+    drop_na()
+```
+
 Create a second R chunk to create a summary dataset with the mean, minimum, maximum, and standard deviation of total nitrogen concentrations for each lake. Create a second summary dataset that is identical except that it evaluates total phosphorus. Customize the chunk options such that the code is run but not displayed in the final document.
+
+```{r DEWV2, echo=FALSE}
+NTL_LTER_N_summary <- NTL_LTER_Nut_processed %>% 
+    group_by(lakename) %>% 
+    summarize(Mean = mean(tn_ug),
+              Minimum = min(tn_ug),
+              Maximum = max(tn_ug),
+              SD = sd(tn_ug))
+
+NTL_LTER_P_summary <- NTL_LTER_Nut_processed %>% 
+    group_by(lakename) %>% 
+    summarize(Mean = mean(tp_ug),
+              Minimum = min(tp_ug),
+              Maximum = max(tp_ug),
+              SD = sd(tp_ug))
+```
+
 
 Create a third R chunk that uses the function `kable` in the knitr package to display two tables: one for the summary dataframe for total N and one for the summary dataframe of total P. Use the `caption = " "` code within that function to title your tables. Customize the chunk options such that the final table is displayed but not the code used to generate the table.
 
+``` {r DEWV3, echo=FALSE}
+kable(NTL_LTER_N_summary, caption = "Summary statistics for surface N concentrations, by lake (units in micrograms).")
+
+kable(NTL_LTER_P_summary, caption = "Summary statistics for surfaceP concentrations, by lake (units in micrograms).")
+
+```
+
 Create a fourth and fifth R chunk that generates two plots (one in each chunk): one for total N over time with different colors for each lake, and one with the same setup but for total P. Decide which geom option will be appropriate for your purpose, and select a color palette that is visually pleasing and accessible. Customize the chunk options such that the final figures are displayed but not the code used to generate the figures. In addition, customize the chunk options such that the figures are aligned on the left side of the page. Lastly, add a fig.cap chunk option to add a caption (title) to your plot that will display underneath the figure.
 
+```{r DEWV4, fig.align = 'left', fig.cap='Total summer Nitrogen concentrations for 8 lakes between 1991 and 1999', echo=FALSE }
+
+DEWV4_plot <- ggplot(NTL_LTER_Nut_processed, aes(x = sampledate, y = (tn_ug/1000),
+                                                 color = lakename)) +
+    geom_line() +
+    scale_x_date(date_breaks = "12 months", date_labels = "%b %y",
+                 expand = c(0,0)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = 'right') +
+    labs(x = "", y = "Total Nitrogren (mg)", color = "")
+
+print(DEWV4_plot)
+
+```
+
+```{r DEWV5, fig.align = 'left', fig.cap='Total summer Phosphorus concentrations for 8 lakes between 1991 and 1999', echo=FALSE}
+
+DEWV5_plot <- ggplot(NTL_LTER_Nut_processed, aes(x = sampledate, y = (tp_ug),
+                                                 color = lakename)) +
+    geom_line() +
+    scale_x_date(date_breaks = "12 months", date_labels = "%b %y",
+                 expand = c(0,0)) +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1),
+          legend.position = 'right') +
+    labs(x = "", y = "Total Phosphorus (ug)", color = "")
+
+print(DEWV5_plot)
+
+```
 
 ### Communicating results
 
 Write a paragraph describing your findings from the R coding challenge above. This should be geared toward an educated audience but one that is not necessarily familiar with the dataset. Then insert a horizontal rule below the paragraph. Below the horizontal rule, write another paragraph describing the next steps you might take in analyzing this dataset. What questions might you be able to answer, and what analyses would you conduct to answer those questions?
+
+*This preliminary analysis of nutrient concentrations in the North Temperate Lakes study lakes revieled that several things. First, surface concentrations of Nitrogren within each lake were higher, on average than Phosphorus concentrations (Table 3, Table 4). This is for the entire study period, between 1991 & 1999. When breaking this data down by date, we still see Nitrogen concentrations being higher compared to Phosphorus, but we also see both nutrients peaking in the summer of 1996 (Figure 1, Figure 2).*
+
+------------
+*There are two things I want to do with the dataset after reflecting on this preliminary anaylsis. The first is to compared the statistics in Tables 2 and 3 with the same stats at different depths within the lakes. I don't know if different nutrients behave differently at different depths and evaluating the stats could indicate whether that is the case. The second thing I would like to do is break total Nitrogren and total Phosphorus into its constituent molecules and see how the same graphs in Figures 1 and 2 would look. I'm interested in knowing if the large peaks we see in 1996 are due to a single nutrient of multiple. This could suggest an avenue for identifying the cause of the spike.* 
 
 
 ## KNIT YOUR PDF
